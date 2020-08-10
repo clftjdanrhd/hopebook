@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mis.mappers.BookBoardMapper">
+
+	<!-- private String bookBrdNum; private String bookBrdTitle; private String 
+		bookBrdContent; private Date bookBrdDate; private int bookBrdCount; private 
+		String bookNum; private String bookTitle; private String memNum; private 
+		String writer; //梨낆��옄 private String publisher; //異쒗뙋�궗 -->
+
+
+
+	<insert keyProperty="bookBrdNum" useGeneratedKeys="true"
+		id="create">
+		insert into tb_book_board (bookBrdTitle,
+		bookBrdContent,
+		bookNum,bookTitle,
+		writer, publisher,memNum, memName ,imgPath)
+		values(
+		#{bookBrdTitle},
+		#{bookBrdContent},
+		#{bookNum},#{bookTitle},
+		#{writer},
+		#{publisher},#{memNum},#{memName},#{imgPath})
+	</insert>
+
+	<select id="read" resultType="com.mis.domain.BookBoardVO">
+		select
+		bookBrdNum, bookBrdTitle,
+		bookBrdContent, bookNum, bookTitle, writer, publisher,memNum,memName,imgPath
+
+
+		from
+		tb_book_board
+		where
+		bookBrdNum = #{bookBrdNum}
+	</select>
+
+	<update id="update">
+		update tb_book_board set bookBrdTitle
+		=#{bookBrdTitle}, bookBrdContent
+		=#{bookBrdContent}, publisher =
+		#{publisher}, bookNum = #{bookNum}, bookTitle =#{bookTitle}
+
+		where
+		bookBrdNum = #{bookBrdNum}
+	</update>
+
+	<delete id="delete">
+		delete from tb_book_board where bookBrdNum=#{bookBrdNum}
+	</delete>
+
+	<select id="listSearch" resultType="com.mis.domain.BookBoardVO">
+   <![CDATA[
+      select bookBrdNum, bookBrdTitle, writer, publisher,bookBrdDate
+      from tb_book_board
+      where bookBrdNum > 0
+      order by bookBrdNum desc
+      limit #{pageStart}, #{perPageNum}
+]]>
+	</select>
+
+	<select id="listSearchCount" resultType="int">
+      <![CDATA[
+      select count(bookBrdNum) 
+      from tb_book_board
+      where bookBrdNum > 0
+      ]]>
+
+
+	</select>
+
+
+	<!-- 메인 화면에 보여줄 최근 이달의 책 3권 리스트 -->
+	<select id="mainList" resultType="com.mis.domain.BookBoardVO">
+   <![CDATA[
+      select bookBrdNum, bookBrdTitle, imgPath, bookTitle
+      from tb_book_board
+      where bookBrdNum > 0
+      order by bookBrdNum desc
+      limit 0, 3
+	]]>
+	</select>
+
+	<select id="mainRead" resultType="com.mis.domain.BookBoardVO">
+		select
+		bookBrdNum, bookBrdTitle,
+		bookBrdContent, bookNum, bookTitle, writer, publisher,memNum,memName,imgPath
+
+
+		from
+		tb_book_board
+		where
+		bookBrdNum = #{bookBrdNum}
+	</select>
+
+
+
+	<select resultType="com.mis.domain.BookVO" id="bookList">
+		SELECT
+		bookNum,bookTitle,writer,publisher,
+		bookKeyword1,bookKeyword2,bookKeyword3
+
+		FROM tb_book
+	</select>
+
+	<!-- 학생 :: 팝업 - 진로명 검색 -->
+
+
+	<select resultType="com.mis.domain.BookVO" id="searchBook">
+
+
+		SELECT bookNum, bookTitle, writer, publisher
+		FROM tb_book
+		WHERE
+		(UPPER(bookTitle) LIKE CONCAT('%', UPPER(#{bookTitle}), '%'))
+		OR
+		(UPPER(writer) LIKE CONCAT('%', UPPER(#{bookTitle}), '%'))
+		OR
+		(UPPER(publisher) LIKE CONCAT('%', UPPER(#{bookTitle}), '%'))
+
+	</select>
+
+
+
+
+
+
+	<insert id="insertFiles">
+
+		INSERT INTO
+
+		tb_file
+		(fileNum, fileName, bookBrdNum)
+		values
+		( #{fileNum}, #{fileName},
+		#{bookBrdNum} )
+
+	</insert>
+
+	<!-- 파일 목록 -->
+
+
+	<select id="fileList" resultType="com.mis.domain.FileVO">
+
+		select
+		fileNum, substr(fileName, 50) as fileName,
+		fileName as fileLocation, bookBrdNum
+		from
+		tb_file
+		where bookBrdNum = #{bookBrdNum}
+	</select>
+
+
+
+	<delete id="deleteFile">
+		DELETE FROM
+		tb_file
+		WHERE
+		bookBrdNum = #{bookBrdNum}
+	</delete>
+</mapper>

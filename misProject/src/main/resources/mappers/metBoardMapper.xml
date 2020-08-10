@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mis.mapper.MetBoardMapper">
+
+	<insert id="create" useGeneratedKeys="true"  keyProperty="metBrdNum" >
+		insert into tb_met_board(metBrdName, metBrdContent, metBrdCategory, metNum, memNum)
+		values(#{metBrdName}, #{metBrdContent}, #{metBrdCategory}, #{metNum}, #{memNum})
+	</insert>
+
+	<sql id="search">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and metBrdName like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and metBrdCategory like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (metBrdName like CONCAT('%', #{keyword}, '%')
+				or
+				metBrdCategory like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>
+	</sql>
+
+
+	<select id="listSearch" resultType="com.mis.domain.MetBoardVO">
+	<![CDATA[  
+  select * 
+  from tb_met_board 
+  where metBrdNum > 0  
+  order by metBrdNum desc
+  limit #{pageStart}, #{perPageNum}
+]]>
+	</select>
+
+
+	<select id="read" resultType="com.mis.domain.MetBoardVO">
+		select 
+			m.metBrdNum, m.metBrdName, m.metBrdContent, m.regDate,
+			m.metBrdCount, m.metBrdCategory,m.memNum, b.memName
+		from 
+			tb_met_board m, tb_member b
+		where 
+			m.memNum = b.memNum and metBrdNum = #{metBrdNum};
+	</select>
+
+	<select id="listSearchCount" resultType="int">
+		<![CDATA[
+		select count(metBrdNum) 
+		from tb_met_board 
+		where metBrdNum >0
+		]]>
+		<include refid="search"></include>
+	</select>
+
+
+	<update id="updateMetBrdCount">
+		update tb_met_board
+		set metBrdCount = metBrdCount + 1
+		where metBrdNum = #{metBrdNum}
+	</update>
+
+
+	<update id="update">
+		update tb_met_board
+		set
+		metBrdContent = #{metBrdContent},
+		metBrdName = #{metBrdName},
+		metBrdCategory = #{metBrdCategory}
+		where metBrdNum = #{metBrdNum}
+	</update>
+
+
+	<delete id="delete">
+		delete from tb_met_board where metBrdNum=#{metBrdNum}
+	</delete>
+		
+	<delete id="deleteFile">
+		delete from tb_file where metBrdNum=#{metBrdNum}
+	</delete>	
+	
+	<insert id="insertFiles"> 
+		insert into tb_file (fileName, metBrdNum)
+		values(#{fileName},#{metBrdNum})
+	</insert>
+
+	<!-- 파일 목록 -->
+	<select id="fileList" resultType="com.mis.domain.FileVO">
+	select
+	fileNum	,
+	substr(fileName, 50) as fileName
+	, fileName as fileLocation, metBrdNum
+	from tb_file
+	where metBrdNum = #{metBrdNum}
+	</select>
+	
+
+</mapper>

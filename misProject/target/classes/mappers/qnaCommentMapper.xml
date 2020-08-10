@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mis.mapper.qnaCommentMapper">
+
+	<select id="list" resultType="com.mis.domain.QnACommentVO">	
+	select 
+		m.qnaComtNum, m.qnaComContent, DATE_FORMAT(m.qnaComtDate,'%Y-%m-%d') as ajaxComtDate, m.qNum, m.memNum, b.memName
+	from 
+		tb_qna_comment m, tb_member b
+	where 
+		m.memNum = b.memNum and m.qNum = #{qNum} 
+	order by m.qnaComtNum desc
+	</select>
+
+
+	<insert id="create">
+		insert into tb_qna_comment(qNum, memNum, qnaComContent)
+		values(#{qNum},#{memNum},#{qnaComContent})
+	</insert>
+	
+	
+
+	<delete id="delete">
+		delete from tb_qna_comment
+		where qnaComtNum = #{qnaComtNum}
+	</delete>
+	
+	<delete id="deleteAll"> 
+		delete from tb_qna_comment
+		where qNum = #{qNum}
+	</delete>
+	
+		<select id="comment" resultType="int">
+	select count(*) as qyn from tb_qna_comment r, tb_qna q  where r.qNum = q.qNum and q.qNum = #{qNum}
+	</select>
+	
+
+
+</mapper>

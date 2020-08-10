@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mis.mappers.NoticeMapper">
+	<!-- @Author 동주 -->
+
+	<!-- create -->
+
+	<insert id="create" useGeneratedKeys="true"
+		keyProperty="noticeNum">
+		insert into tb_notice(noticeTitle, noticeContent, memNum,
+		memName, noticeCount)
+		values(#{noticeTitle}, #{noticeContent}, #{memNum},#{memName}, #{noticeCount})
+	</insert>
+
+	
+	
+	<sql id="search">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and noticeTitle like CONCAT('%', #{keyword}, '%')
+			</if>
+		</if>
+	</sql>
+
+	<select id="listSearch" resultType="com.mis.domain.NoticeVO">
+<![CDATA[  
+		select noticeNum, noticeTitle, noticeDate, noticeCount, memName
+		from
+		tb_notice
+		where noticeNum > 0
+		order by noticeNum desc
+		limit #{pageStart}, #{perPageNum}
+]]>
+	</select>
+
+
+
+
+	<select id="listSearchCount" resultType="int">
+      <![CDATA[
+      select count(noticeNum) 
+      from tb_notice 
+      where noticeNum > 0
+      ]]>
+		<include refid="search"></include> <!-- refid: 레퍼런스 참조할 아이디 -->
+
+	</select>
+
+	<!-- updateViewCnt -->
+	<update id="noticeCount">
+		update tb_notice
+		set noticeCount = noticeCount + 1
+		where
+		noticeNum = #{noticeNum} 
+	</update>
+
+	<select id="read" resultType="com.mis.domain.NoticeVO">
+		select
+		noticeNum, noticeTitle,
+		noticeContent,memName,memNum, noticeCount
+		from
+		tb_notice
+		where
+		noticeNum= #{noticeNum}
+	</select>
+
+	<update id="update">
+		update tb_notice set
+		noticeTitle=#{noticeTitle},
+		noticeContent=#{noticeContent}
+		where
+		noticeNum=#{noticeNum}
+	</update>
+
+	
+	<delete id="delete">
+		delete from tb_notice where noticeNum=#{noticeNum}
+	</delete>
+
+	<delete id="deleteFile">
+		delete from tb_file where noticeNum=#{noticeNum}
+	</delete>
+
+	<insert id="insertFiles">
+		insert into tb_file
+		(fileName,
+		noticeNum)
+		values
+		(#{fileName},
+		#{noticeNum})
+	</insert>
+
+	<!-- 파일 목록 -->
+	<select id="fileList" resultType="com.mis.domain.FileVO">
+		select fileNum
+		,
+		substr(fileName, 50) as fileName
+		, fileName as
+		fileLocation, noticeNum
+		from tb_file
+		where noticeNum =
+		#{noticeNum}
+	</select>
+
+	
+</mapper>

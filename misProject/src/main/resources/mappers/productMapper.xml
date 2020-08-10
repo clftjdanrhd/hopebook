@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mis.mapper.ProductMapper">
+
+	<insert id="create">
+		insert into tbl_product (pno, pname, price, content,
+		writer)
+		values(seq_product.nextval, #{pname}, #{price}, #{content},
+		#{writer})
+	</insert>
+
+	<select id="read" resultType="com.mis.domain.ProductVO">
+
+		select
+		pno, pname, price, content,
+		writer,
+		regdate, viewcnt
+		from
+		tbl_product
+		where pno = #{pno}
+	</select>
+
+	<update id="update">
+		update tbl_product set pname =#{pname}, content
+		=#{content}, price=#{price}
+		where pno = #{pno}
+	</update>
+
+	<delete id="delete">
+		delete from tbl_product where pno=#{pno}
+	</delete>
+
+
+
+
+
+
+
+	<select id="listCountCriteria"
+		resultType="com.mis.domain.ProductVO">
+<![CDATA[
+select  * from(
+select
+rownum rnum, pno, pname, price, content, writer, regdate, viewcnt
+from tbl_product 
+where pno> 0)
+where(rnum >= #{pageStart} AND rnum <= #{pageEnd})
+order by pno desc, regdate desc
+
+]]>
+	</select>
+
+
+
+	<select id="countPaging" resultType="int">
+<![CDATA[
+
+select
+count(pno)
+from tbl_product 
+where pno> 0
+
+]]>
+	</select>
+
+
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and pname like '%' || #{keyword} || '%'
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and content like '%' || #{keyword} || '%'
+			</if>
+			<if test="searchType == 'w'.toString()">
+				and writer like '%' || #{keyword} || '%'
+			</if>
+			<if test="searchType == 'tc'.toString()">
+				and ( pname like '%' || #{keyword} || '%' OR content like
+				'%' ||
+				#{keyword} || '%')
+			</if>
+			<if test="searchType == 'cw'.toString()">
+				and ( content like '%' || #{keyword} || '%' OR writer
+				like '%' ||
+				#{keyword} || '%')
+			</if>
+			<if test="searchType == 'tcw'.toString()">
+				and ( pname like '%' || #{keyword} || '%'
+				OR
+				content like
+				'%' || #{keyword} || '%'
+				OR
+				writer like '%' || #{keyword} || '%')
+			</if>
+		</if>
+	</sql>
+
+
+	<select id="listSearch" resultType="com.mis.domain.ProductVO">
+<![CDATA[  
+select * from(
+  select rownum rnum, pno, pname,  price, content, writer, regdate, viewcnt from (
+  select 
+   pno, pname,  price, content, writer, regdate, viewcnt 
+  from 
+  tbl_product where pno > 0 
+]]>
+		<include refid="search"></include>
+
+		order by pno desc, regdate desc
+  
+<![CDATA[    
+ )) where (rnum >= #{pageStart} AND rnum <= #{pageEnd}) 
+order by pno desc, regdate desc
+]]>
+
+	</select>
+
+
+	<select id="listSearchCount" resultType="int">
+<![CDATA[  
+  select count(pno) 
+  from tbl_product 
+  where pno > 0 
+]]>
+		<include refid="search"></include> <!-- refid: 레퍼런스 참조할 아이디 -->
+
+	</select>
+
+	<update id="updateViewCnt">
+		update tbl_product
+		set viewcnt = viewcnt +1
+		where pno= #{pno}
+	</update>
+
+</mapper>

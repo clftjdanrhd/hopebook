@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mis.mappers.BookMapper">
+
+	<!-- 등록 -->
+	<insert id="create">
+
+		insert into tb_book
+		
+		(bookTitle,isbn,
+		bookKeyword1, bookKeyword2,
+		bookKeyword3,writer,
+		publisher,memNum, memName)
+		
+
+		values
+		
+		
+		(#{bookTitle},#{isbn},#{bookKeyword1},#{bookKeyword2},
+		#{bookKeyword3},#{writer},#{publisher},#{memNum},#{memName})
+	</insert>
+
+	<select id="read" resultType="com.mis.domain.BookVO">
+		select
+		bookNum,bookTitle,isbn,bookKeyword1,bookKeyword2,bookKeyword3,writer,publisher,memNum, memName
+		from tb_book where bookNum = #{bookNum}
+	</select>
+
+	<update id="update">
+		update tb_book set
+		bookTitle=#{bookTitle},isbn=#{isbn},bookKeyword1=#{bookKeyword1},bookKeyword2=#{bookKeyword2},bookKeyword3=#{bookKeyword3},writer=#{writer},publisher=#{publisher}
+		where bookNum=#{bookNum}
+	</update>
+
+	<delete id="delete">
+		delete from tb_book where bookNum= #{bookNum}
+	</delete>
+
+
+	<sql id="search">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and bookTitle like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and writer like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (bookTitle like CONCAT('%', #{keyword}, '%')
+				or writer like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>
+	</sql>
+
+
+
+
+	<select id="listSearch" resultType="com.mis.domain.BookVO">
+<![CDATA[
+		select bookNum, bookTitle, writer, publisher,memName,publishDate
+		from tb_book
+		where bookNum > 0
+      order by bookNum desc
+      limit #{pageStart}, #{perPageNum}
+]]>
+		<include refid="search"></include>
+
+
+	</select>
+
+	<select id="listSearchCount" resultType="int">
+ 
+      <![CDATA[
+      select count(bookNum) 
+      from tb_book
+      where bookNum > 0
+
+      ]]>
+		<include refid="search"></include>
+
+	</select>
+
+
+
+	<select id="listAll" resultType="com.mis.domain.BookVO">
+
+
+
+		<![CDATA[
+      select 
+      bookNum, bookTitle, writer, publisher,bookKeyword1,bookKeyword2,bookKeyword3
+      FROM tb_book
+      WHERE bookNum > 0
+        ORDER BY bookNum DESC
+        limit 0,9
+   ]]>
+	</select>
+
+
+</mapper>

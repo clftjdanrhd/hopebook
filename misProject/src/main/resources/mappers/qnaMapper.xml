@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mis.mappers.qnaMapper">
+
+
+
+
+<insert id="create" useGeneratedKeys="true" keyProperty="qNum">
+		insert into tb_qna
+		(title,content,memNum,memName)
+		value
+		(#{title},#{content},#{memNum},#{memName})
+	</insert>
+
+
+
+	<select id="read" resultType="com.mis.domain.QnAVO">
+		select qNum,title,content,memNum,memName
+		from tb_qna where qNum=#{qNum}
+
+	</select>
+
+	<update id="update">
+		update tb_qna set title=#{title},
+		content=#{content}
+		where
+		qNum=#{qNum}
+	</update>
+
+	<delete id="delete">
+		DELETE FROM tb_qna WHERE qNum=#{qNum}
+	</delete>
+
+
+
+
+	<select id="listSearch" resultType="com.mis.domain.QnAVO">
+<![CDATA[  
+		select
+		qNum,title,content,memNum,inDate
+		,(select count(*) from tb_qna_comment where tb_qna_comment.qNum =  tb_qna.qNum) as commCnt
+		,memName
+		from
+		tb_qna where qNum  > 0
+]]>
+		<include refid="search"></include>
+		order by qNum desc
+		limit #{pageStart},#{perPageNum}
+		
+	</select>
+
+
+
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and title like CONCAT ('%', #{keyword} ,'%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and content like CONCAT ('%', #{keyword} ,'%')
+			</if>
+
+			<if test="searchType == 'tc'.toString()">
+				and ( title like CONCAT ('%', #{keyword} ,'%') OR
+				content
+				like
+				CONCAT ('%', #{keyword} ,'%'))
+			</if>
+
+		</if>
+	</sql>
+
+
+
+	<select id="listSearchCount" resultType="int">
+<![CDATA[  
+  select count(qNum) 
+  from tb_qna
+  where qNum > 0 
+]]>
+		<include refid="search"></include> <!-- refid: 레퍼런스 참조할 아이디 -->
+	</select>
+
+
+	<delete id="deleteFile">
+		delete from tb_file where qNum=#{qNum}
+	</delete>
+
+	<insert id="insertFiles">
+		insert into tb_file
+		(fileName, qNum)
+		values (#{fileName}, #{qNum})
+	</insert>
+
+	<!-- 파일 목록 -->
+	<select id="fileList" resultType="com.mis.domain.FileVO">
+		select fileNum
+		,
+		substr(fileName, 50) as fileName
+		, fileName as
+		fileLocation, qNum
+		from tb_file
+		where qNum = #{qNum}
+	</select>
+</mapper>

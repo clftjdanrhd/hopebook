@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mis.mapper.MetCommentMapper">
+
+	<select id="list" resultType="com.mis.domain.MetCommentVO">
+	
+	select 
+		m.metComtNum, m.metComtContent, m.metComtDate,m.metBrdNum, m.memNum, b.memName
+	from 
+		tb_met_comment m, tb_member b
+	where 
+		m.memNum = b.memNum and m.metBrdNum = #{metBrdNum} 
+	order by m.metComtNum desc
+	
+	</select>
+
+
+	<insert id="create">
+		insert into tb_met_comment(metBrdNum, memNum, metComtContent)
+		values(#{metBrdNum},#{memNum},#{metComtContent})
+	</insert>
+	
+	<update id="update">
+	update tb_met_comment
+	set
+		metComtContent= #{metComtContent}
+	where 
+		metComtNum =#{metComtNum}
+	</update>
+
+	<delete id="delete">
+		delete from tb_met_comment
+		where metComtNum = #{metComtNum}
+	</delete>
+	
+	<delete id="deleteAll"> 
+		delete from tb_met_comment
+		where metBrdNum = #{metBrdNum}
+	</delete>
+
+
+</mapper>

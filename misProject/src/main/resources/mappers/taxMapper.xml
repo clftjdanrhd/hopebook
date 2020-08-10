@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mis.mapper.TaxMapper">
+
+	<insert id="create">
+		insert into tb_tax
+		(taxName,taxEmail,taxPhone ,taxAdr1 ,taxAdr2 ,taxAdr3,taxMsg ,memNum)
+		value(#{taxName},#{taxEmail},#{taxPhone},#{taxAdr1},#{taxAdr2},#{taxAdr3},#{taxMsg},#{memNum})
+	</insert>
+
+	<select id="read" resultType="com.mis.domain.TaxVO">
+
+		select
+		taxNum,taxName,taxEmail,taxPhone,taxAdr1,taxAdr2 ,taxAdr3, taxMsg, memNum
+		from
+		tb_tax
+		where taxNum = #{taxNum}
+	</select>
+
+	
+	<update id="update">
+		update tb_tax set taxNum =#{taxNum}, taxName
+		=#{taxName}, taxPhone=#{taxPhone}, taxAdr1=#{taxAdr1},
+		taxAdr2=#{taxAdr2}, taxAdr3=#{taxAdr3}, taxMsg=#{taxMsg}
+		where taxNum =#{taxNum}
+	</update>
+
+	<delete id="delete">
+		delete from tb_tax where taxNum=#{taxNum}
+	</delete>
+
+
+	<sql id="search">
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and taxName like CONCAT ('%', #{keyword} ,'%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and taxEmail like CONCAT ('%', #{keyword} ,'%')
+			</if>
+			<if test="searchType == 'w'.toString()">
+				and taxPhone like CONCAT ('%', #{keyword} ,'%')
+			</if>
+			<if test="searchType == 'tc'.toString()">
+				and ( taxName like CONCAT ('%', #{keyword} ,'%') OR taxEmail
+				like CONCAT ('%', #{keyword} ,'%'))
+			</if>
+			<if test="searchType == 'cw'.toString()">
+				and ( taxEmail like CONCAT ('%', #{keyword} ,'%') OR taxPhone
+				like CONCAT ('%', #{keyword} ,'%'))
+			</if>
+			<if test="searchType == 'tcw'.toString()">
+				and ( taxName like CONCAT ('%', #{keyword} ,'%')
+				OR
+				taxEmail
+				like CONCAT ('%', #{keyword} ,'%')
+				OR
+				taxPhone like CONCAT ('%', #{keyword} ,'%'))
+			</if>
+		</if>
+	</sql>
+
+
+	<select id="listSearch" resultType="com.mis.domain.TaxVO">
+
+
+
+		select
+		taxNum,taxName,taxEmail,taxPhone,taxAdr1,taxAdr2 ,taxAdr3, taxMsg,memNum
+		from
+		tb_tax where taxNum>0
+
+		<include refid="search"></include>
+		order by taxNum desc
+		limit 0,9
+
+	</select>
+
+
+
+	<select id="listSearchCount" resultType="int">
+<![CDATA[  
+    select
+        count(taxNum)
+    from
+        tb_tax where taxNum > 0
+
+]]>
+		<include refid="search"></include>
+
+	</select>
+</mapper>

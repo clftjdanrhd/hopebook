@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mis.mappers.reportMapper">
+
+
+
+	<insert id="create">
+		insert into tb_report_board
+		(reportTitle,reportContent,memNum,bookNum,writer,memName,publisher,reportCategory,reportCount)
+		value
+		(#{reportTitle},#{reportContent},#{memNum},#{bookNum},#{writer},#{memName},#{publisher},#{reportCategory}, #{reportCount})
+	</insert>
+
+	<select id="read" resultType="com.mis.domain.ReportBoardVO">
+		select reportNum,reportTitle,reportContent,bookNum,writer,publisher,reportCategory,memNum,memName
+		from tb_report_board where reportNum=#{reportNum} 
+	
+	</select>
+	
+	<update id="update">
+		UPDATE tb_report_board SET reportTitle=#{reportTitle},
+		reportContent=#{reportContent}, reportCategory=#{reportCategory}
+		WHERE
+		reportNum=#{reportNum}
+	</update>
+
+	<delete id="delete">
+		DELETE FROM tb_report_board WHERE reportNum=#{reportNum}
+	</delete>
+
+<!-- 게시글 조회수  -->
+	<update id="updateViewCnt">
+		update tb_report_board set reportCount = reportCount+1
+		where reportNum=#{reportNum}
+	</update>
+
+<!-- 리스트 페이지 -->
+	<select id="listSearch"
+		resultType="com.mis.domain.ReportBoardVO">
+
+		select
+		reportNum,reportTitle,writer,publisher,reportCount,reportDate,memName
+		from
+		tb_report_board where reportNum is not null
+
+		<include refid="search"></include>
+
+		order by 
+		reportNum desc
+		limit 0 ,9
+	</select>
+
+	<!-- 검색 -->
+	<sql id="search"  >
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and reportTitle like CONCAT ('%', #{keyword} ,'%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and reportContent like CONCAT ('%', #{keyword} ,'%')
+			</if>
+			<if test="searchType == 'w'.toString()">
+				and writer like CONCAT ('%', #{keyword} ,'%')
+			</if>
+			<if test="searchType == 'tc'.toString()">
+				and ( reportTitle like CONCAT ('%', #{keyword} ,'%') OR
+				reportContent like
+				CONCAT ('%', #{keyword} ,'%'))
+			</if>
+			<if test="searchType == 'cw'.toString()">
+				and ( reportContent like CONCAT ('%', #{keyword} ,'%') OR
+				writer
+				like CONCAT ('%', #{keyword} ,'%'))
+			</if>
+			<if test="searchType == 'tcw'.toString()">
+				and ( reportTitle like CONCAT ('%', #{keyword} ,'%')
+				OR
+				reportContent like
+				CONCAT ('%', #{keyword} ,'%')
+				OR
+				writer like CONCAT
+				('%', #{keyword} ,'%'))
+			</if>
+		</if>
+	</sql> 
+	
+
+
+ 
+
+<!-- 전체 게시글 수 -->
+	<select id="listSearchCount" resultType="int">
+<![CDATA[  
+  select count(reportNum) 
+  from tb_report_board 
+  where reportNum > 0 
+]]>
+		<include refid="search"></include> <!-- refid: 레퍼런스 참조할 아이디 -->
+
+	</select>
+
+   <select resultType="com.mis.domain.BookVO" id="bookList">
+      SELECT
+      bookNum,bookTitle,writer,publisher, bookKeyword1,bookKeyword2,bookKeyword3
+ 
+      FROM tb_book
+   </select>
+
+   <!-- 학생 :: 팝업 - 진로명 검색 -->
+
+
+   <select resultType="com.mis.domain.BookVO" id="searchBook">
+   <!--    SELECT
+      bookNum,bookTitle,writer,publisher, bookKeyword1,bookKeyword2,bookKeyword3
+      FROM tb_book
+      WHERE UPPER(bookTitle) LIKE UPPER('%',REPLACE('',#{bookTitle}, '', ' ',''),'%')  -->
+      
+      SELECT   bookNum, bookTitle, writer, publisher  
+      FROM tb_book  
+      WHERE (UPPER(bookTitle) LIKE CONCAT('%', UPPER(#{bookTitle}), '%'))
+      OR (UPPER(writer)  LIKE  CONCAT('%', UPPER(#{bookTitle}), '%')) 
+      OR (UPPER(publisher)  LIKE  CONCAT('%', UPPER(#{bookTitle}), '%'))
+   
+      </select>
+</mapper>
+
+

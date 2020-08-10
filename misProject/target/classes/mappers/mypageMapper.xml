@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mis.mappers.mypageMapper">
+
+	<update id="memberUpdate">
+		update tb_member set memPw=#{memPw}, memName
+		=#{memName},memId =#{memId},
+		phone=#{phone},email=#{email},adr1=#{adr1},adr2=#{adr2},adr3=#{adr3}
+		where memNum = #{memNum}
+	</update>
+
+</mapper>
+
+<!-- 	<update id="memberUpdate">
+		update tb_member set memPw=#{memPw}, memName
+		=#{memName},memId =#{memId},
+		phone=#{phone},email=#{email},adr=#{adr},adr2=#{adr2},metNum=#{metNum}
+		where memId = #{memId}
+	</update>
+ -->

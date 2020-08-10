@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mis.mapper.MeetingMapper">
+
+	<insert id="create">
+		insert into tb_meeting
+		( metName,metIntro, metGreeting
+		,represent, memNum,
+		location,metPlace,keyword,memName)
+
+		values( #{metName},
+		#{metIntro},#{metGreeting},#{represent},#{memNum},#{memName},
+		#{location},#{metPlace},#{keyword})
+
+	</insert>
+
+
+	<select id="read" resultType="com.mis.domain.MeetingVO">
+		select metNum, metName ,
+		metGreeting , represent,
+		headCount,metIntro,keyword,location,metPlace,approval,memNum,memName
+		from
+		tb_meeting
+		where metNum = #{metNum}
+		order by metNum desc
+	</select>
+
+	<update id="update">
+		update tb_meeting set
+		metName =#{metName},
+		metGreeting=#{metGreeting},
+		represent=#{represent},
+		headCount=#{headCount},
+		metIntro =#{metIntro},
+		keyword =#{keyword},
+		location=#{location},
+		metPlace =#{metPlace},
+		approval =#{approval}
+
+		where
+		metNum = #{metNum}
+	</update>
+
+
+	<delete id="delete">
+		delete from tb_meeting where metNum=#{metNum}
+	</delete>
+
+	<sql id="search">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and metName like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and keyword like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (metName like CONCAT('%', #{keyword}, '%')
+				or keyword
+				like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>
+	</sql>
+
+
+
+	<select id="listSearch" resultType="com.mis.domain.MeetingVO">
+<![CDATA[  
+  select * 
+  from tb_meeting
+  where metNum > 0  
+  order by metNum  desc
+  limit #{pageStart}, #{perPageNum}
+]]>
+	</select>
+
+
+	<select id="listSearchCount" resultType="int">
+<![CDATA[  
+  select count(metNum ) 
+  from tb_meeting 
+  where metNum  > 0 
+]]>
+		<include refid="search"></include>
+
+	</select>
+
+	<select id="mainList" resultType="com.mis.domain.MeetingVO">
+      <![CDATA[  
+  select * 
+  from tb_meeting
+  where metNum > 0  
+  order by metNum desc
+  limit 0, 3
+	]]>
+	</select>
+
+
+
+
+</mapper>

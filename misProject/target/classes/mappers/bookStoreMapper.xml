@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mis.mapper.BookstoreMapper">
+
+	<insert id="create">
+		insert into tb_bookstore(bookstoreTitle, bookstoreContent, bookstoreUrl, memNum)
+		values( #{bookstoreTitle}, #{bookstoreContent}, #{bookstoreUrl}, #{memNum})
+	</insert>
+
+
+	<select id="read" resultType="com.mis.domain.BookstoreVO">
+		select bookstoreNum, bookstoreTitle, bookstoreContent, bookstoreUrl, memNum
+		from tb_bookstore
+		where bookstoreNum = #{bookstoreNum}
+		order by bookstoreNum desc
+	</select>
+
+	<update id="update">
+		update tb_bookstore
+		set
+		bookstoreTitle = #{bookstoreTitle },
+		bookstoreContent = #{bookstoreContent},
+		bookstoreUrl = #{bookstoreUrl},
+		where bookstoreNum = #{bookstoreNum}
+	</update>
+
+
+	<delete id="delete">
+		delete from tb_bookstore where bookstoreNum=#{bookstoreNum}
+	</delete>
+
+	<sql id="search">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and bookstoreTitle like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and bookstoreContent like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (bookstoreTitle like CONCAT('%', #{keyword}, '%')
+				or bookstoreContent like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>
+	</sql>
+
+
+	
+<select id="listSearch" resultType="com.mis.domain.BookstoreVO">
+<![CDATA[  
+  select * 
+  from tb_bookstore 
+  where bookstoreNum > 0  
+  order by bookstoreNum desc
+  limit #{pageStart}, #{perPageNum}
+]]>
+	</select>
+
+
+	<select id="listSearchCount" resultType="int">
+<![CDATA[  
+  select count(bookstoreNum) 
+  from tb_bookstore 
+  where bookstoreNum > 0 
+]]>
+		<include refid="search"></include>
+
+	</select>
+
+
+
+
+
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mis.mapper.LibraryMapper">
+
+	<insert id="create">
+		insert into tb_library(libraryTitle, libraryContent, libraryUrl, memNum)
+		values( #{libraryTitle}, #{libraryContent}, #{libraryUrl}, #{memNum})
+	</insert>
+
+
+	<select id="read" resultType="com.mis.domain.LibraryVO">
+		select libraryNum, libraryTitle, libraryContent, libraryUrl
+		from tb_library
+		where libraryNum = #{libraryNum}
+		order by libraryNum desc
+	</select>
+
+	<update id="update">
+		update tb_library
+		set
+		libraryTitle = #{libraryTitle },
+		libraryContent = #{libraryContent},
+		libraryUrl = #{libraryUrl},
+		where libraryNum = #{libraryNum}
+	</update>
+
+
+	<delete id="delete">
+		delete from tb_library where libraryNum=#{libraryNum}
+	</delete>
+
+	<sql id="search">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and libraryTitle like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and libraryContent like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (libraryTitle like CONCAT('%', #{keyword}, '%')
+				or libraryContent like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>
+	</sql>
+
+
+	
+<select id="listSearch" resultType="com.mis.domain.LibraryVO">
+<![CDATA[  
+  select * 
+  from tb_library 
+  where libraryNum > 0  
+  order by libraryNum desc
+  limit #{pageStart}, #{perPageNum}
+]]>
+	</select>
+
+
+	<select id="listSearchCount" resultType="int">
+<![CDATA[  
+  select count(libraryNum) 
+  from tb_library  
+  where libraryNum > 0 
+]]>
+		<include refid="search"></include>
+
+	</select>
+
+
+
+
+
+</mapper>

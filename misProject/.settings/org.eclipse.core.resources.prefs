@@ -1,0 +1,15 @@
+eclipse.preferences.version=1
+encoding//src/main/java/com/mis/domain/BookBoardVO.java=UTF-8
+encoding//src/main/java/com/mis/domain/BookVO.java=UTF-8
+encoding//src/main/java/com/mis/domain/Paging.java=UTF-8
+encoding//src/main/java/com/mis/persistence/BookDAO.java=UTF-8
+encoding//src/main/java/com/mis/persistence/ProductDAO.java=UTF-8
+encoding//src/main/java/com/mis/util/UploadFileUtils.java=UTF-8
+encoding//src/main/webapp/WEB-INF/views/bookboard/adminList.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/home.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/include/header.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/intro/hire.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/intro/intro.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/member/login.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/sboard/list.jsp=UTF-8
+encoding/<project>=UTF-8

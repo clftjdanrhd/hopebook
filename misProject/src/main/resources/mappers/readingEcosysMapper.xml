@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.mis.mapper.ReadingEcosysMapper">
+
+
+
+	<!-- 독서모임 친구 -->
+	<!-- <select id="listMeeting" resultType="com.mis.domain.MeetingVO"> select 
+		metNum, metName, headCount, location, keyword,metDate from tb_meeting order 
+		by metNum limit 0, 9 </select> -->
+
+	<select id="readMeeting" resultType="com.mis.domain.MeetingVO">
+		select metNum, metName,
+		represent, metIntro, metGreeting,
+		headCount, location, keyword,metDate,
+		metPlace, approval, memNum
+		from tb_meeting
+		where metNum = #{metNum}
+	</select>
+
+	<update id="updateMeeting">
+		update tb_meeting
+		set
+		metName = #{metName},
+		metIntro =
+		#{metIntro},
+		keyword = #{keyword},
+		metGreeting = #{metGreeting},
+		location = #{location},
+		metPlace = #{metPlace}
+		where metNum = #{metNum}
+	</update>
+
+	<delete id="deleteMeeting">
+		delete from tb_meeting where metNum = #{ metNum}
+	</delete>
+
+	<select id="meetingListSearch"
+		resultType="com.mis.domain.MeetingVO">
+<![CDATA[  
+  select metNum, metName,
+		headCount, location, keyword,metDate
+  from tb_meeting
+  where metNum > 0  
+  order by metNum desc
+  limit #{pageStart}, #{perPageNum}
+]]>
+	</select>
+
+
+	<select id="meetingListSearchCount" resultType="int">
+<![CDATA[  
+  select count(metNum) 
+  from tb_meeting 
+  where metNum > 0 
+]]>
+		<include refid="meetingSearch"></include>
+
+	</select>
+
+
+	<sql id="meetingSearch">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and memName like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and keyword like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (memId like CONCAT('%', #{keyword}, '%')
+				or keyword
+				like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>
+	</sql>
+	<!-- <select id="listSearch" resultType="com.mis.domain.MeetingVO"> select 
+		* from tb_meeting where metNum > 0 order by metNum desc limit 0,9 </select> 
+		<select id="listSearchCount" resultType="int"> <![CDATA[ select count(metNum) 
+		from tb_meeting where metNum > 0 ]]> </select> -->
+	<!-- 독서모임 승인 거절 친구 -->
+
+	<!-- <select id="listYnMeeting" resultType="com.mis.domain.MeetingVO"> select 
+		metNum, metName, headCount, location, keyword,metDate from tb_meeting order 
+		by metNum limit 0, 9 </select> -->
+
+	<select id="readYnMeeting" resultType="com.mis.domain.MeetingVO">
+		select *
+		from tb_meeting
+		where metNum = #{metNum}
+	</select>
+
+	<delete id="deleteYnMeeting">
+		delete from tb_meeting where metNum = #{metNum}
+	</delete>
+
+	<select id="meetingYnListSearch"
+		resultType="com.mis.domain.MeetingVO">
+<![CDATA[  
+ select metNum, metName,
+		headCount, location, keyword,metDate
+  from tb_meeting
+  where metNum > 0  
+  order by metNum desc
+  limit #{pageStart}, #{perPageNum}
+]]>
+	</select>
+
+
+	<select id="meetingYnListSearchCount" resultType="int">
+<![CDATA[  
+  select count(metNum) 
+  from tb_meeting 
+  where metNum > 0 
+]]>
+		<include refid="ynMeetingSearch"></include>
+
+	</select>
+
+	<sql id="ynMeetingSearch">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and memName like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and metNum like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (memId like CONCAT('%', #{keyword}, '%')
+				or metNum
+				like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>
+	</sql>
+	<!-- book 친구 -->
+	<!-- <select id="listBook" resultType="com.mis.domain.BookVO"> select bookNum, 
+		bookTitle, writer, publisher, publishDate, memNum, bookKeyword1, bookKeyword2, 
+		bookKeyword3, ISBN, memName from tb_book order by bookNum desc limit , </select> 
+		<delete id="deleteBook"> delete from tb_book where bookNum = #{bookNum} </delete> 
+		<select id="readBook" resultType="com.mis.domain.BookVO"> select bookNum, 
+		bookTitle, writer, publisher, publishDate, bookKeyword1, bookKeyword2, bookKeyword3 
+		from tb_book where bookNum = #{bookNum} </select> <update id="updateBook"> 
+		update tb_book set bookTitle = #{bookTitle}, writer = #{writer}, publisher 
+		= #{publisher}, publishDate = #{publishDate}, bookKeyword1 = #{bookKeyword1}, 
+		bookKeyword2 = #{bookKeyword2}, bookKeyword3 = #{bookKeyword3} where bookNum 
+		= #{bookNum} </update> -->
+
+
+	<!-- 독후감 친구 -->
+	<!-- <select id="listReport" resultType="com.mis.domain.ReportBoardVO"> 
+		select reportNum, reportTitle, reportDate from tb_report_board order by reportNum 
+		desc limit 0,9 </select> -->
+
+	<select id="countReport"
+		resultType="com.mis.domain.ReportBoardVO">
+		select count(*)
+		from tb_report_board
+		where reportNum > 0
+		order by reportNum desc
+		limit 0,9
+	</select>
+
+	<delete id="deleteReport">
+		delete from tb_report_board where reportNum =
+		#{reportNum}
+	</delete>
+
+	<select id="reportListSearch"
+		resultType="com.mis.domain.ReportBoardVO">
+<![CDATA[  
+  select reportNum, reportTitle, reportDate
+  from tb_report_board
+  where reportNum > 0  
+  order by reportNum desc
+  limit #{pageStart}, #{perPageNum}
+]]>
+	</select>
+
+
+
+	<sql id="reportSearch">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and reportTitle like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and reportCategory like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (memId like CONCAT('%', #{keyword}, '%')
+				or keyword
+				like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>
+	</sql>
+
+	<select id="reportListSearchCount" resultType="int">
+<![CDATA[  
+  select count(reportNum) 
+  from tb_report_board 
+  where reportNum > 0 
+]]>
+		<include refid="reportSearch"></include>
+
+	</select>
+
+
+
+	<!-- <select id="listSearch" resultType="com.mis.domain.ReportBoardVO"> 
+		select * from tb_report_board where reportNum > 0 order by reportNum desc 
+		limit 0,9 </select> <select id="listSearchCount" resultType="int"> <![CDATA[ 
+		select count(reportNum) from tb_report_board where reportNum > 0 ]]> </select> -->
+
+
+
+
+	<!-- 도서관 친구 -->
+	<insert id="createLibrary">
+		insert into tb_library
+		( libraryTitle, libraryContent, libraryUrl, memNum)
+
+		values( #{libraryTitle}, #{libraryContent},#{libraryUrl},#{memNum})
+
+	</insert>
+
+	<!-- <select id="listLibrary" resultType="com.mis.domain.LibraryVO"> select 
+		libraryNum, libraryTitle, libraryContent, libraryUrl from tb_library order 
+		by libraryNum limit 0, 9 </select> -->
+
+	<select id="readLibrary" resultType="com.mis.domain.LibraryVO">
+		select libraryNum,
+		libraryTitle, libraryContent, libraryUrl
+		from tb_library
+		where
+		libraryNum = #{libraryNum}
+	</select>
+
+	<update id="updateLibrary">
+		update tb_library
+		set
+		libraryTitle = #{libraryTitle},
+		libraryContent = #{libraryContent},
+		libraryUrl = #{libraryUrl}
+		where
+		libraryNum = #{libraryNum}
+	</update>
+
+	<delete id="deleteLibrary">
+		delete from tb_library where libraryNum =
+		#{libraryNum}
+	</delete>
+
+	<select id="libraryListSearch"
+		resultType="com.mis.domain.LibraryVO">
+<![CDATA[  
+  select libraryNum,
+		libraryTitle, libraryContent, libraryUrl
+  from tb_library
+  where libraryNum > 0  
+  order by libraryNum desc
+  limit #{pageStart}, #{perPageNum}
+]]>
+	</select>
+
+
+	<sql id="librarySearch">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and libraryTitle like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and libraryContent like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (libraryTitle like CONCAT('%', #{keyword}, '%')
+				or
+				libraryContent
+				like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>
+	</sql>
+
+	<select id="libraryListSearchCount" resultType="int">
+<![CDATA[  
+  select count(libraryNum) 
+  from tb_library
+  where libraryNum > 0 
+]]>
+		<include refid="librarySearch"></include>
+
+	</select>
+
+
+	<!-- 책방 친구 -->
+	<!-- 책방 리스트 -->
+
+	<insert id="createBookstore">
+		insert into tb_bookstore
+		( bookstoreTitle, bookstoreContent, bookstoreUrl,
+		memNum)
+
+		values( #{bookstoreTitle}, #{bookstoreContent},#{bookstoreUrl},#{memNum})
+
+	</insert>
+
+
+	<!-- <select id="listBookstore" resultType="com.mis.domain.BookstoreVO"> 
+		select bookstoreNum, bookstoreTitle, bookstoreContent, bookstoreUrl from 
+		tb_bookstore order by bookstoreNum limit 0,9 </select> -->
+
+	<select id="readBookstore"
+		resultType="com.mis.domain.BookstoreVO">
+		select bookstoreTitle, bookstoreContent, bookstoreUrl
+		from
+		tb_bookstore
+		where bookstoreNum = #{bookstoreNum}
+	</select>
+
+	<update id="updateBookstore">
+		update tb_bookstore
+		set
+		bookstoreTitle =
+		#{bookstoreTitle},
+		bookstoreContent = #{bookstoreContent},
+		bookstoreUrl
+		= #{bookstoreUrl}
+		where bookstoreNum = #{bookstoreNum}
+	</update>
+
+	<delete id="deleteBookstore">
+		delete from tb_bookstore where bookstoreNum =
+		#{bookstoreNum}
+	</delete>
+
+	<select id="bookstoreListSearch"
+		resultType="com.mis.domain.BookstoreVO">
+<![CDATA[  
+ select bookstoreNum, bookstoreTitle, bookstoreContent,
+		bookstoreUrl
+  from tb_bookstore
+  where bookstoreNum > 0  
+  order by bookstoreNum desc
+  limit #{pageStart}, #{perPageNum}
+]]>
+	</select>
+
+
+	<sql id="bookstoreSearch">
+		<!-- 검색 조건이 null이 아니라면 검색조건에 따른 데이터 조회 -->
+		<if test="searchType != null">
+			<if test="searchType == 't'.toString()">
+				and bookstoreTitle like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'c'.toString()">
+				and bookstoreContent like CONCAT('%', #{keyword}, '%')
+			</if>
+			<if test="searchType == 'all'.toString()">
+				and (bookstoreTitle like CONCAT('%', #{keyword}, '%')
+				or
+				bookstoreContent
+				like CONCAT('%', #{keyword}, '%'))
+			</if>
+		</if>
+	</sql>
+
+
+	<select id="bookstoreListSearchCount" resultType="int">
+<![CDATA[  
+  select count(bookstoreNum) 
+  from tb_bookstore
+  where bookstoreNum > 0 
+]]>
+		<include refid="bookstoreSearch"></include>
+
+	</select>
+
+	<!-- <select id="listSearch" resultType="com.mis.domain.BookstoreVO"> select 
+		* from tb_bookstore where bookstoreNum > 0 order by bookstoreNum desc limit 
+		0,9 </select> <select id="listSearchCount" resultType="int"> <![CDATA[ select 
+		count(mbookstoreNum) from tb_bookstore where bookstoreNum > 0 ]]> </select> -->
+
+</mapper>
